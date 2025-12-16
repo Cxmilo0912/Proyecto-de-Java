@@ -9,6 +9,7 @@ public class Usuario {
     private String email;
     private String clave;
     private Timestamp created_at;
+    private String proveedor;
 
     // Constructor vacío
     public Usuario() {
@@ -62,6 +63,14 @@ public class Usuario {
 
     public void setCreated_at(Timestamp created_at) {
         this.created_at = created_at;
+    }
+
+    public String getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
     }
 
 }

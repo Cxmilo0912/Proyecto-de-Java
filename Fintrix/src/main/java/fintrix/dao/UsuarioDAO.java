@@ -70,7 +70,7 @@ public class UsuarioDAO {
             return false;
         }
     }
-
+   
     public boolean actualizarUsuario(Usuario usuario) {
         String sql = "UPDATE usuarios SET nombre = ?, email = ?, clave = ? "
                 + "WHERE id = ?";
@@ -131,4 +131,64 @@ public class UsuarioDAO {
         return lista;
     }
 
+    public Usuario obtenerPorEmail(String email) {
+        String sql = "SELECT * FROM usuarios WHERE email = ?";
+        Usuario usuario = null;
+
+        try (Connection conn = Conexion.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setClave(rs.getString("clave"));
+                usuario.setProveedor(rs.getString("proveedor"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return usuario;
+    }
+
+    public boolean insertarUsuarioGoogle(String nombre, String email) {
+        String sql = "INSERT INTO usuarios (nombre, email, proveedor) VALUES (?, ?, 'GOOGLE')";
+
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nombre);
+            pstmt.setString(2, email);
+            return pstmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Usuario login(String email, String clave) {
+        String sql = "SELECT * FROM usuarios WHERE email = ? AND clave = ?";
+        try (Connection conn = Conexion.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ps.setString(2, clave);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Usuario u = new Usuario();
+                u.setId(rs.getInt("id"));
+                u.setNombre(rs.getString("nombre"));
+                u.setEmail(rs.getString("email"));
+                return u;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

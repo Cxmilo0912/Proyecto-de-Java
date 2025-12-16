@@ -3,36 +3,51 @@
 <!DOCTYPE html>
 
 <%
-    String theme = (String)session.getAttribute("theme");
-    if (theme == null) {
-        try {
-            fintrix.dao.UsuarioDAO udao = new fintrix.dao.UsuarioDAO();
-            Integer usuarioId = (Integer) session.getAttribute("usuarioId");
-            fintrix.model.Usuario uTmp = null;
-            if (usuarioId != null) {
-                uTmp = udao.obtenerPorId(usuarioId);
-            }
-            if (uTmp == null) {
-                java.util.List<fintrix.model.Usuario> todos = udao.listarUsuarios();
-                if (todos != null && !todos.isEmpty()) {
-                    uTmp = todos.get(0);
-                    session.setAttribute("usuarioId", uTmp.getId());
-                }
-            }
-            if (uTmp != null) {
-                fintrix.dao.PreferenciasDAO pDaoTmp = new fintrix.dao.PreferenciasDAO();
-                fintrix.model.Preferencias pTmp = pDaoTmp.obtenerPorUsuarioId(uTmp.getId());
-                theme = pTmp.getTema();
+    String theme = (String) session.getAttribute("theme");
+
+    try {
+        // 1. VALIDACIÓN DE SESIÓN (OBLIGATORIA)
+        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+        if (usuarioId == null) {
+            response.sendRedirect("../index.jsp");
+            return;
+        }
+
+        // 2. CARGAR USUARIO
+        fintrix.dao.UsuarioDAO udao = new fintrix.dao.UsuarioDAO();
+        fintrix.model.Usuario uTmp = udao.obtenerPorId(usuarioId);
+
+        if (uTmp == null) {
+            session.invalidate();
+            response.sendRedirect("../index.jsp");
+            return;
+        }
+
+        // 3. CARGAR PREFERENCIAS SOLO SI NO EXISTEN EN SESIÓN
+        if (theme == null) {
+            fintrix.dao.PreferenciasDAO pDaoTmp = new fintrix.dao.PreferenciasDAO();
+            fintrix.model.Preferencias pTmp
+                    = pDaoTmp.obtenerPorUsuarioId(uTmp.getId());
+
+            if (pTmp != null) {
+                theme = pTmp.getTema() != null ? pTmp.getTema() : "dark";
                 session.setAttribute("theme", theme);
-                java.util.Locale currLocInit = pDaoTmp.getLocaleForMoneda(pTmp.getMoneda());
+
+                java.util.Locale currLocInit
+                        = pDaoTmp.getLocaleForMoneda(pTmp.getMoneda());
                 session.setAttribute("currencyLocale", currLocInit);
             } else {
                 theme = "dark";
+                session.setAttribute("theme", theme);
             }
-        } catch (Exception ex) { theme = "dark"; }
+        }
+
+    } catch (Exception ex) {
+        theme = "dark";
+        session.setAttribute("theme", theme);
     }
 %>
-<html class="<%= theme %>" lang="es"><head>
+<html class="<%= theme%>" lang="es"><head>
         <meta charset="utf-8"/>
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
         <title>Panel de control de finanzas</title>
@@ -81,8 +96,16 @@
             request.setCharacterEncoding("UTF-8");
             List<Transaccion> ts = null;
             List<Cuenta> cs = null;
-            try { ts = new TransaccionDAO().listarTransacciones(); } catch (Exception e) { ts = java.util.Collections.emptyList(); }
-            try { cs = new CuentaDAO().listarCuentas(); } catch (Exception e) { cs = java.util.Collections.emptyList(); }
+            try {
+                ts = new TransaccionDAO().listarTransacciones();
+            } catch (Exception e) {
+                ts = java.util.Collections.emptyList();
+            }
+            try {
+                cs = new CuentaDAO().listarCuentas();
+            } catch (Exception e) {
+                cs = java.util.Collections.emptyList();
+            }
             LocalDate hoy = LocalDate.now();
             YearMonth ym = YearMonth.from(hoy);
             double ingresosMes = 0.0, gastosMes = 0.0, totalIngresos = 0.0, totalGastos = 0.0;
@@ -90,27 +113,36 @@
                 LocalDate f = t.getFecha() != null ? t.getFecha().toLocalDate() : hoy;
                 if ("Ingreso".equalsIgnoreCase(t.getTipo())) {
                     totalIngresos += t.getMonto();
-                    if (YearMonth.from(f).equals(ym)) ingresosMes += t.getMonto();
+                    if (YearMonth.from(f).equals(ym)) {
+                        ingresosMes += t.getMonto();
+                    }
                 } else if ("Gasto".equalsIgnoreCase(t.getTipo())) {
                     totalGastos += t.getMonto();
-                    if (YearMonth.from(f).equals(ym)) gastosMes += t.getMonto();
+                    if (YearMonth.from(f).equals(ym)) {
+                        gastosMes += t.getMonto();
+                    }
                 }
             }
             double saldoInicial = 0.0;
-            for (Cuenta c : cs) saldoInicial += c.getSaldo_inicial();
+            for (Cuenta c : cs) {
+                saldoInicial += c.getSaldo_inicial();
+            }
             double saldoActual = saldoInicial + totalIngresos - totalGastos;
-            java.util.Locale currLocNF = (java.util.Locale)session.getAttribute("currencyLocale");
-            if (currLocNF == null) currLocNF = new java.util.Locale("es","CO");
+            java.util.Locale currLocNF = (java.util.Locale) session.getAttribute("currencyLocale");
+            if (currLocNF == null) {
+                currLocNF = new java.util.Locale("es", "CO");
+            }
             NumberFormat nf = NumberFormat.getCurrencyInstance(currLocNF);
 
-            Map<Integer,String> catNames = new HashMap<>();
+            Map<Integer, String> catNames = new HashMap<>();
             try {
                 for (Categoria c : new CategoriaDAO().listarCategorias()) {
                     catNames.put(c.getId(), c.getNombre());
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
-            Map<String,Double> gastoPorCategoria = new HashMap<>();
+            Map<String, Double> gastoPorCategoria = new HashMap<>();
             for (Transaccion t : ts) {
                 LocalDate f = t.getFecha() != null ? t.getFecha().toLocalDate() : hoy;
                 if (YearMonth.from(f).equals(ym) && "Gasto".equalsIgnoreCase(t.getTipo())) {
@@ -118,13 +150,15 @@
                     gastoPorCategoria.put(key, gastoPorCategoria.getOrDefault(key, 0.0) + t.getMonto());
                 }
             }
-            List<Map.Entry<String,Double>> top = new ArrayList<>(gastoPorCategoria.entrySet());
-            java.util.Collections.sort(top, new java.util.Comparator<Map.Entry<String,Double>>() {
-                public int compare(Map.Entry<String,Double> a, Map.Entry<String,Double> b) {
+            List<Map.Entry<String, Double>> top = new ArrayList<>(gastoPorCategoria.entrySet());
+            java.util.Collections.sort(top, new java.util.Comparator<Map.Entry<String, Double>>() {
+                public int compare(Map.Entry<String, Double> a, Map.Entry<String, Double> b) {
                     return Double.compare(b.getValue(), a.getValue());
                 }
             });
-            while (top.size() < 3) top.add(new AbstractMap.SimpleEntry<>("-", 0.0));
+            while (top.size() < 3) {
+                top.add(new AbstractMap.SimpleEntry<>("-", 0.0));
+            }
 
             double totalGastoMes = gastosMes;
             double v0 = top.get(0).getValue();
@@ -149,7 +183,8 @@
                     return Long.compare(tb, ta);
                 }
             });
-            if (recientes.size() > 3) recientes = recientes.subList(0,3);
+            if (recientes.size() > 3)
+                recientes = recientes.subList(0, 3);
         %>
         <div id="top" class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
             <div class="flex flex-col flex-1 pb-24">
@@ -172,12 +207,12 @@
                         boolean dbOk = Conexion.testConnection();
                         String dbMsg = dbOk ? "Conectado a la base de datos" : "No hay conexión a la base de datos";
                     %>
-                    <div class="rounded-lg px-4 py-2 text-sm <%= dbOk ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700" %>"><%= dbMsg %></div>
+                    <div class="rounded-lg px-4 py-2 text-sm <%= dbOk ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"%>"><%= dbMsg%></div>
                 </div>
                 <!-- BodyText -->
                 <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal pb-0 pt-4 px-4">Saldo Actual</p>
                 <!-- HeadlineText -->
-                <h1 class="text-slate-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-1"><%= nf.format(saldoActual) %></h1>
+                <h1 class="text-slate-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-1"><%= nf.format(saldoActual)%></h1>
                 <!-- ButtonGroup -->
                 <div class="flex justify-stretch">
                     <div class="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
@@ -195,11 +230,11 @@
                 <div class="flex flex-wrap gap-4 p-4">
                     <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg bg-white dark:bg-slate-800/50 p-6 shadow-sm">
                         <p class="text-slate-500 dark:text-slate-400 text-base font-medium leading-normal">Ingresos del Mes</p>
-                        <p class="text-green-500 dark:text-green-400 tracking-light text-2xl font-bold leading-tight">+<%= nf.format(ingresosMes) %></p>
+                        <p class="text-green-500 dark:text-green-400 tracking-light text-2xl font-bold leading-tight">+<%= nf.format(ingresosMes)%></p>
                     </div>
                     <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-lg bg-white dark:bg-slate-800/50 p-6 shadow-sm">
                         <p class="text-slate-500 dark:text-slate-400 text-base font-medium leading-normal">Gastos del Mes</p>
-                        <p class="text-red-500 dark:text-red-400 tracking-light text-2xl font-bold leading-tight">-<%= nf.format(gastosMes) %></p>
+                        <p class="text-red-500 dark:text-red-400 tracking-light text-2xl font-bold leading-tight">-<%= nf.format(gastosMes)%></p>
                     </div>
                 </div>
                 <!-- Donut Chart Card -->
@@ -208,38 +243,38 @@
                     <div class="flex flex-col items-center justify-center rounded-lg bg-white dark:bg-slate-800/50 p-6 gap-6 shadow-sm">
                         <div class="relative w-40 h-40">
                             <svg class="w-full h-full" viewbox="0 0 36 36">
-                            <path class="stroke-current text-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="<%= p0s %>, 100" stroke-width="4"></path>
-                            <path class="stroke-current text-purple-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="<%= p1s %>, 100" stroke-dashoffset="<%= o1s %>" stroke-width="4"></path>
-                            <path class="stroke-current text-yellow-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="<%= p2s %>, 100" stroke-dashoffset="<%= o2s %>" stroke-width="4"></path>
+                            <path class="stroke-current text-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="<%= p0s%>, 100" stroke-width="4"></path>
+                            <path class="stroke-current text-purple-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="<%= p1s%>, 100" stroke-dashoffset="<%= o1s%>" stroke-width="4"></path>
+                            <path class="stroke-current text-yellow-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="<%= p2s%>, 100" stroke-dashoffset="<%= o2s%>" stroke-width="4"></path>
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
                                 <span class="text-slate-500 dark:text-slate-400 text-sm">Total Gastado</span>
-                                <span class="text-slate-900 dark:text-white text-xl font-bold"><%= nf.format(gastosMes) %></span>
+                                <span class="text-slate-900 dark:text-white text-xl font-bold"><%= nf.format(gastosMes)%></span>
                             </div>
                         </div>
-                            <div class="w-full flex flex-col gap-3">
-                                <div class="flex items-center justify-between text-sm">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                                        <span class="text-slate-600 dark:text-slate-300"><%= top.get(0).getKey() %></span>
-                                    </div>
-                                    <span class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(top.get(0).getValue()) %></span>
+                        <div class="w-full flex flex-col gap-3">
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                                    <span class="text-slate-600 dark:text-slate-300"><%= top.get(0).getKey()%></span>
                                 </div>
-                                <div class="flex items-center justify-between text-sm">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-3 h-3 rounded-full bg-purple-500"></span>
-                                        <span class="text-slate-600 dark:text-slate-300"><%= top.get(1).getKey() %></span>
-                                    </div>
-                                    <span class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(top.get(1).getValue()) %></span>
-                                </div>
-                                <div class="flex items-center justify-between text-sm">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                                        <span class="text-slate-600 dark:text-slate-300"><%= top.get(2).getKey() %></span>
-                                    </div>
-                                    <span class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(top.get(2).getValue()) %></span>
-                                </div>
+                                <span class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(top.get(0).getValue())%></span>
                             </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+                                    <span class="text-slate-600 dark:text-slate-300"><%= top.get(1).getKey()%></span>
+                                </div>
+                                <span class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(top.get(1).getValue())%></span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    <span class="text-slate-600 dark:text-slate-300"><%= top.get(2).getKey()%></span>
+                                </div>
+                                <span class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(top.get(2).getValue())%></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Recent Transactions List -->
@@ -249,18 +284,19 @@
                         <a class="text-primary text-sm font-bold" href="#">Ver todo</a>
                     </div>
                     <div class="flex flex-col gap-3">
-                        <% for (Transaccion t : recientes) { boolean ingreso = "Ingreso".equalsIgnoreCase(t.getTipo()); %>
+                        <% for (Transaccion t : recientes) {
+                                boolean ingreso = "Ingreso".equalsIgnoreCase(t.getTipo());%>
                         <div class="flex items-center justify-between rounded-lg bg-white dark:bg-slate-800/50 p-4 shadow-sm">
                             <div class="flex items-center gap-4">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-full <%= ingreso ? "bg-green-500/20 text-green-500" : "bg-primary/20 text-primary" %>">
-                                    <span class="material-symbols-outlined"><%= ingreso ? "payments" : "receipt_long" %></span>
+                                <div class="flex h-12 w-12 items-center justify-center rounded-full <%= ingreso ? "bg-green-500/20 text-green-500" : "bg-primary/20 text-primary"%>">
+                                    <span class="material-symbols-outlined"><%= ingreso ? "payments" : "receipt_long"%></span>
                                 </div>
                                 <div>
-                                    <p class="font-bold text-slate-800 dark:text-white"><%= t.getDescripcion() != null ? t.getDescripcion() : (ingreso ? "Ingreso" : "Gasto") %></p>
-                                    <p class="text-sm text-slate-500 dark:text-slate-400"><%= t.getFecha() != null ? t.getFecha().toString() : "" %></p>
+                                    <p class="font-bold text-slate-800 dark:text-white"><%= t.getDescripcion() != null ? t.getDescripcion() : (ingreso ? "Ingreso" : "Gasto")%></p>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400"><%= t.getFecha() != null ? t.getFecha().toString() : ""%></p>
                                 </div>
                             </div>
-                            <p class="font-bold <%= ingreso ? "text-green-500 dark:text-green-400" : "text-red-500 dark:text-red-400" %>"><%= (ingreso ? "+" : "-") + nf.format(t.getMonto()) %></p>
+                            <p class="font-bold <%= ingreso ? "text-green-500 dark:text-green-400" : "text-red-500 dark:text-red-400"%>"><%= (ingreso ? "+" : "-") + nf.format(t.getMonto())%></p>
                         </div>
                         <% } %>
                     </div>
@@ -271,25 +307,25 @@
                         <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Cuentas</h3>
                     </div>
                     <div class="flex flex-col gap-3">
-                        <% for (Cuenta c : cs) { %>
+                        <% for (Cuenta c : cs) {%>
                         <div class="flex items-center justify-between rounded-lg bg-white dark:bg-slate-800/50 p-4 shadow-sm">
                             <div class="flex items-center gap-4">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-500/20 text-slate-500">
                                     <span class="material-symbols-outlined">account_balance_wallet</span>
                                 </div>
                                 <div>
-                                    <p class="font-bold text-slate-800 dark:text-white"><%= c.getNombre() %></p>
-                                    <p class="text-sm text-slate-500 dark:text-slate-400"><%= c.getTipo() %></p>
+                                    <p class="font-bold text-slate-800 dark:text-white"><%= c.getNombre()%></p>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400"><%= c.getTipo()%></p>
                                 </div>
                             </div>
-                            <p class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(c.getSaldo_inicial()) %></p>
+                            <p class="font-bold text-slate-800 dark:text-slate-100"><%= nf.format(c.getSaldo_inicial())%></p>
                         </div>
                         <% } %>
                         <% if (cs == null || cs.isEmpty()) { %>
                         <div class="rounded-lg bg-white dark:bg-slate-800/50 p-4 text-slate-600 dark:text-slate-300">
                             No hay cuentas registradas.
                         </div>
-                        <% } %>
+                        <% }%>
                     </div>
                 </div>
             </div>

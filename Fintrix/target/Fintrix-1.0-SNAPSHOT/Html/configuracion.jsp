@@ -15,7 +15,7 @@
 <html class="<%= theme %>" lang="es"><head>
         <meta charset="utf-8"/>
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-        <title>Perfil y Configuraciï¿½n</title>
+        <title>Perfil y Configuración</title>
         <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
@@ -59,7 +59,7 @@
                 <div class="flex size-10 shrink-0 items-center justify-start">
                     <span class="material-symbols-outlined text-zinc-900 dark:text-white text-2xl"><a href="PControl_Finanzas.jsp">arrow_back_ios_new</a></span>
                 </div>
-                <h1 class="flex-1 text-center text-lg font-bold leading-tight tracking-[-0.015em] text-zinc-900 dark:text-white">Perfil y Configuraciï¿½n</h1>
+                <h1 class="flex-1 text-center text-lg font-bold leading-tight tracking-[-0.015em] text-zinc-900 dark:text-white">Perfil y Configuración</h1>
                 <div class="flex w-10 items-center justify-end">
                     <p class="shrink-0 text-base font-bold leading-normal tracking-[0.015em] text-primary">Guardar</p>
                 </div>
@@ -158,7 +158,7 @@
                     <div class="w-full">
                         <%
                             boolean dbOk = Conexion.testConnection();
-                            String dbMsg = dbOk ? "Conectado a la base de datos" : "No hay conexiÃ³n a la base de datos";
+                            String dbMsg = dbOk ? "Conectado a la base de datos" : "No hay conexión a la base de datos";
                         %>
                         <div class="rounded-lg px-4 py-2 text-sm <%= dbOk ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700" %>"><%= dbMsg %></div>
                     </div>
@@ -173,7 +173,7 @@
                 </section>
                 <!-- Personal Information Section -->
                 <section class="flex flex-col gap-2">
-                    <h2 class="px-2 text-lg font-bold leading-tight tracking-[-0.015em] text-zinc-900 dark:text-white">Informaciï¿½n Personal</h2>
+                    <h2 class="px-2 text-lg font-bold leading-tight tracking-[-0.015em] text-zinc-900 dark:text-white">Información Personal</h2>
                     <div class="flex flex-col overflow-hidden rounded-lg bg-white dark:bg-zinc-800/50">
                         <form method="post" action="configuracion.jsp" class="flex items-center justify-between gap-4 px-4 min-h-14">
                             <div class="flex items-center gap-4">
@@ -247,7 +247,7 @@
                                 <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-zinc-200 dark:bg-zinc-700">
                                     <span class="material-symbols-outlined text-zinc-900 dark:text-white text-2xl">password</span>
                                 </div>
-                                <input name="new_password" type="password" class="form-input rounded bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white h-10 px-3" placeholder="Nueva contraseÃ±a"/>
+                                <input name="new_password" type="password" class="form-input rounded bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white h-10 px-3" placeholder="Nueva contraseña"/>
                             </div>
                             <button type="submit" class="flex min-w-[64px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-9 px-4 bg-primary text-white text-sm font-bold leading-normal">Guardar</button>
                         </form>
@@ -269,11 +269,11 @@
                 <!-- Actions -->
                 <section class="flex flex-col gap-4 pt-4">
                     <button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-red-500/10 text-red-500 text-base font-bold leading-normal w-full">
-                        <span class="truncate"><a href="../index.jsp">Cerrar Sesiï¿½n</a></span>
+                        <span class="truncate"><a href="../index.jsp">Cerrar Sesión</a></span>
                     </button>
                     <div class="flex flex-col items-center justify-center gap-1 pb-8">
                         <p class="text-sm font-normal text-zinc-500 dark:text-zinc-400">Ayuda y Soporte</p>
-                        <p class="text-sm font-normal text-zinc-500 dark:text-zinc-400">Polï¿½tica de Privacidad</p>
+                        <p class="text-sm font-normal text-zinc-500 dark:text-zinc-400">Política de Privacidad</p>
                     </div>
                 </section>
             </main>

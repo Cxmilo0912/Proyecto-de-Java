@@ -63,7 +63,7 @@
                 </p>
 
                 <!-- FORMULARIO -->
-                <form action="Html/PControl_Finanzas.jsp" method="get" class="mt-8 space-y-4">
+                <form action="Html/Login.jso" method="post" class="mt-8 space-y-4">
 
                     <!-- Email -->
                     <div class="text-left">
@@ -75,7 +75,7 @@
                                 mail
                             </span>
                             <input
-                                type="email"
+                                type="email" name="email"
                                 required
                                 placeholder="tu@email.com"
                                 class="form-input w-full h-12 pl-12 pr-4 rounded-lg bg-white dark:bg-slate-800
@@ -95,7 +95,7 @@
                                 lock
                             </span>
                             <input
-                                type="password"
+                                type="password" name="clave"
                                 required
                                 placeholder="Ingresa tu contraseña"
                                 class="form-input w-full h-12 pl-12 pr-4 rounded-lg bg-white dark:bg-slate-800
@@ -117,6 +117,21 @@
                         Iniciar Sesion
                     </button>
 
+                    <div class="flex items-center gap-3">
+                        <div class="h-px w-full bg-slate-300 dark:bg-slate-700"></div>
+                        <span class="text-sm text-slate-500">o</span>
+                        <div class="h-px w-full bg-slate-300 dark:bg-slate-700"></div>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="google-login"
+                        class="flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                        onclick="onSignIn(googleUser)">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="h-5 w-5">
+                        Continuar con Google
+                    </button>
+                                                       
                 </form>
 
                 <!-- Registro -->
@@ -129,5 +144,26 @@
             </div>
 
         </div>
+        <script>
+            document.getElementById("google-login").addEventListener("click", function () {
+
+                const clientId =
+                        "98988323402-69becp4ocs53usgf56oqbea1i6ig5jbc.apps.googleusercontent.com";
+
+                const redirectUri =
+                        "http://localhost:8080/Fintrix/google-callback";
+
+                const scope = "email profile";
+
+                const googleAuthUrl =
+                        "https://accounts.google.com/o/oauth2/v2/auth" +
+                        "?response_type=code" +
+                        "&client_id=" + encodeURIComponent(clientId) +
+                        "&redirect_uri=" + encodeURIComponent(redirectUri) +
+                        "&scope=" + encodeURIComponent(scope);
+
+                window.location.href = googleAuthUrl;
+            });
+        </script>
     </body>
 </html>
