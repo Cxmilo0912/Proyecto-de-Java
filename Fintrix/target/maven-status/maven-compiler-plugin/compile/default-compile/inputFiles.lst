@@ -1,0 +1,15 @@
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\controller\UsuarioController.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\model\Usuario.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\model\Categoria.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\controller\CuentaController.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\dao\Conexion.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\controller\CategoriaController.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\model\Transaccion.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\dao\UsuarioDAO.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\model\Cuenta.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\controller\TransaccionController.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\dao\CuentaDAO.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\model\Preferencias.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\dao\CategoriaDAO.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\dao\PreferenciasDAO.java
+D:\Proyecto_Java\Fintrix\src\main\java\fintrix\dao\TransaccionDAO.java
