@@ -59,7 +59,7 @@
                     c.setNombre(nombre);
                     c.setTipo(tipoCuenta);
                     c.setSaldo_inicial(saldo);
-                    boolean ok = cdao.actualizarCuenta(c);
+                    boolean ok = cdao.actualizarCuentaPorUsuario(c);
                     msg = ok ? "Cuenta actualizada" : "Error al actualizar cuenta"; tipo = ok ? "success" : "danger";
                     if (ok) { response.sendRedirect("cuentas.jsp"); return; }
                 }
@@ -71,7 +71,7 @@
             }
         } catch (Exception ex) { msg = "Datos inválidos"; tipo = "warning"; }
     }
-    List<Cuenta> cs = null; try { cs = new CuentaDAO().listarCuentas(); } catch (Exception e) { cs = java.util.Collections.emptyList(); }
+    List<Cuenta> cs = null; try { cs = new CuentaDAO().listarCuentasPorUsuario(usuarioId); } catch (Exception e) { cs = java.util.Collections.emptyList(); }
 %>
 <html class="<%= theme %>" lang="es"><head>
         <meta charset="utf-8"/>

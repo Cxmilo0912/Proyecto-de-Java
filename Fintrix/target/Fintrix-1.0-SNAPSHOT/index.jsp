@@ -63,7 +63,9 @@
                 </p>
 
                 <!-- FORMULARIO -->
-                <form action="Html/Login.jso" method="post" class="mt-8 space-y-4">
+                <form action="/Fintrix/Html/Login.jsp" method="post">
+
+
 
                     <!-- Email -->
                     <div class="text-left">
@@ -131,7 +133,7 @@
                         <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="h-5 w-5">
                         Continuar con Google
                     </button>
-                                                       
+
                 </form>
 
                 <!-- Registro -->
@@ -160,7 +162,9 @@
                         "?response_type=code" +
                         "&client_id=" + encodeURIComponent(clientId) +
                         "&redirect_uri=" + encodeURIComponent(redirectUri) +
-                        "&scope=" + encodeURIComponent(scope);
+                        "&scope=" + encodeURIComponent(scope) +
+                        "&prompt=select_account";
+
 
                 window.location.href = googleAuthUrl;
             });

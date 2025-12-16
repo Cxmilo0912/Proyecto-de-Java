@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/google-login")
 public class GoogleLoginServlet extends HttpServlet {
 
-    private static final String CLIENT_ID = "TU_CLIENT_ID";
+    private static final String CLIENT_ID = "98988323402-69becp4ocs53usgf56oqbea1i6ig5jbc.apps.googleusercontent.com";
     private static final String REDIRECT_URI
             = "http://localhost:8080/Fintrix/google-callback";
 

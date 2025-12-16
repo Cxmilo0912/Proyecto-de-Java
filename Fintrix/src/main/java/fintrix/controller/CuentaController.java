@@ -22,7 +22,7 @@ public class CuentaController implements Serializable {
 
     public String listar() {
         try {
-            cuentas = cuentaDAO.listarCuentas();
+            cuentas = cuentaDAO.listarCuentasPorUsuario(0);
             return "success";
         } catch (Exception e) {
             mensaje = "Error al listar las cuentas: " + e.getMessage();
@@ -36,7 +36,7 @@ public class CuentaController implements Serializable {
             if (criterio != null && !criterio.trim().isEmpty()) {
                 cuentas = cuentaDAO.buscar(criterio);
             } else {
-                cuentas = cuentaDAO.listarCuentas();
+                cuentas = cuentaDAO.listarCuentasPorUsuario(0);
             }
             return "success";
         } catch (Exception e) {

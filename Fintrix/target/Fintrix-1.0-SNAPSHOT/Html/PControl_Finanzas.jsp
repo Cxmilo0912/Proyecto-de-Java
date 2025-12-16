@@ -93,16 +93,17 @@
     </head>
     <body class="bg-background-light dark:bg-background-dark font-display">
         <%
+            Integer usuarioId = (Integer) session.getAttribute("usuarioId");
             request.setCharacterEncoding("UTF-8");
             List<Transaccion> ts = null;
             List<Cuenta> cs = null;
             try {
-                ts = new TransaccionDAO().listarTransacciones();
+                ts = new TransaccionDAO().listarTransaccionesPorUsuario(usuarioId);
             } catch (Exception e) {
                 ts = java.util.Collections.emptyList();
             }
             try {
-                cs = new CuentaDAO().listarCuentas();
+                cs = new CuentaDAO().listarCuentasPorUsuario(usuarioId);
             } catch (Exception e) {
                 cs = java.util.Collections.emptyList();
             }

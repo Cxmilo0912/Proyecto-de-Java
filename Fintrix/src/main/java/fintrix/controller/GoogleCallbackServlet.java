@@ -26,7 +26,7 @@ import org.json.JSONObject;
 public class GoogleCallbackServlet extends HttpServlet {
 
     private static final String CLIENT_ID = "98988323402-69becp4ocs53usgf56oqbea1i6ig5jbc.apps.googleusercontent.com";
-    private static final String CLIENT_SECRET = "GOOGLE_CLIENT_SECRET";
+    private static final String CLIENT_SECRET = "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";
     private static final String REDIRECT_URI = "http://localhost:8080/Fintrix/google-callback";
 
     @Override

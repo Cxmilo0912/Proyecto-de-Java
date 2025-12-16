@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 public class Transaccion {
 
     private int id;
+    private int usuario_id;
     private int cuenta_id;
     private int categoria_id;
     private Date fecha;
@@ -19,8 +20,9 @@ public class Transaccion {
     }
 
     // Constructor completo
-    public Transaccion(int id, int cuenta_id, int categoria_id, Date fecha, String tipo, String descripcion, double monto, Timestamp creado_en) {
+    public Transaccion(int id,int usuario_id, int cuenta_id, int categoria_id, Date fecha, String tipo, String descripcion, double monto, Timestamp creado_en) {
         this.id = id;
+        this.usuario_id = usuario_id;
         this.cuenta_id = cuenta_id;
         this.categoria_id = categoria_id;
         this.fecha = fecha;
@@ -93,6 +95,14 @@ public class Transaccion {
 
     public void setCreado_en(Timestamp creado_en) {
         this.creado_en = creado_en;
+    }
+
+    public void setUsuario_id(int usuario_id) {
+        this.usuario_id = usuario_id;
+    }
+
+    public int getUsuario_id() {
+        return usuario_id;
     }
 
 }

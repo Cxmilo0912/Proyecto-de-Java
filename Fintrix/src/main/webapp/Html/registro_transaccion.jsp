@@ -44,12 +44,13 @@
     </head>
     <body class="bg-background-light dark:bg-background-dark font-display">
         <%
+            Integer usuarioId = (Integer) session.getAttribute("usuarioId");
             request.setCharacterEncoding("UTF-8");
             List<Categoria> categorias = null;
             List<Cuenta> cuentas = null;
             try { new CategoriaDAO().sembrarCategoriasGastoPorDefecto(1); } catch (Exception e) {}
             try { categorias = new CategoriaDAO().listarPorTipo("Gasto"); } catch (Exception e) { categorias = java.util.Collections.emptyList(); }
-            try { cuentas = new CuentaDAO().listarCuentas(); } catch (Exception e) { cuentas = java.util.Collections.emptyList(); }
+            try { cuentas = new CuentaDAO().listarCuentasPorUsuario(usuarioId); } catch (Exception e) { cuentas = java.util.Collections.emptyList(); }
             String hoy = LocalDate.now().toString();
             String msg = null; String tipo = null;
             if ("POST".equalsIgnoreCase(request.getMethod())) {
@@ -64,6 +65,7 @@
                     int cuentaId = Integer.parseInt(cuentaStr);
                     Date fecha = Date.valueOf(fechaStr);
                     Transaccion t = new Transaccion();
+                    t.setUsuario_id(usuarioId);
                     t.setCuenta_id(cuentaId);
                     t.setCategoria_id(categoriaId);
                     t.setFecha(fecha);
